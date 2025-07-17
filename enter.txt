@@ -1,0 +1,7 @@
+OUTPUT "are we insaaaaeeeeeane?"
+INPUT ans
+IF ans = "yes" THEN
+	OUTPUT "correct"
+ELSE
+	OUTPUT "incorrect"
+ENDIF
