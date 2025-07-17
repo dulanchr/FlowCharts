@@ -6,12 +6,22 @@ A program that converts pseudocode to .png flowcharts
 
 import re
 import os
+import sys
 from math import log, floor
 
 import click
 from PIL import Image, ImageDraw, ImageFont
 
 from tree import newTree,newNode
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 __author__ = "Mugilan Ganesan"
 __email__ = "mugi.ganesan@gmail.com"
@@ -22,12 +32,28 @@ def read(file_name):
 
     #get raw lines out of txt
     
-    converter = os.path.realpath(__file__)
-    self_path = re.compile(r'(.+)Converter.py')
-    text_path = re.search(self_path,converter).group(1) + file_name
-    text_file = open(text_path,"r")
-    lines = text_file.readlines()
-    text_file.close()
+    # Handle both absolute and relative paths
+    if os.path.isabs(file_name):
+        text_path = file_name
+    else:
+        # For relative paths, check if file exists in current directory first
+        if os.path.exists(file_name):
+            text_path = file_name
+        else:
+            # Try to find the file relative to the script location
+            converter = os.path.realpath(__file__)
+            self_path = re.compile(r'(.+)Converter.py')
+            script_dir = re.search(self_path, converter).group(1)
+            text_path = os.path.join(script_dir, file_name)
+    
+    try:
+        text_file = open(text_path, "r", encoding='utf-8')
+        lines = text_file.readlines()
+        text_file.close()
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Could not find file: {file_name}")
+    except Exception as e:
+        raise Exception(f"Error reading file {file_name}: {str(e)}")
     
     # Basic Preprocessor
     
@@ -88,7 +114,7 @@ def translation(lines,font_data):
     branch_width = {} #keeps track of the maximum width of each branch
     layer_height = {} #keeps track of the maximum height of each layer
     
-    font_path = font_data['path']
+    font_path = resource_path(font_data['path'])
     font_size = font_data['size']
     font = ImageFont.truetype(font_path, font_size)
 
@@ -549,7 +575,7 @@ def drawer(chart_code,max_branch,max_y,layer_height,branch_width,font_data):
             
             draw.line([(odd_axis,start),(odd_axis,start+distance)], fill='black', width=1)
             
-    font_path = font_data['path']
+    font_path = resource_path(font_data['path'])
     font_size = font_data['size']
     font = ImageFont.truetype(font_path, font_size)
 
@@ -619,7 +645,7 @@ def drawer(chart_code,max_branch,max_y,layer_height,branch_width,font_data):
 
 @click.command()
 @click.option('--size', default=20, help="The size of the flowchart")
-@click.option('--font', default=r"./fonts/NotoSans-Regular.ttf", help="The font's path")
+@click.option('--font', default=r"fonts/NotoSans-Regular.ttf", help="The font's path")
 @click.option('--code', default="enter.txt", help="The file with pseudocode")
 @click.option('--output', default="flowchart.png", help="The output image")
 
@@ -633,7 +659,6 @@ def main(size,code,output,font):
     flowchart = drawer(chart_code,max_branch,max_y,layer_height,branch_width,font_data)
 
     flowchart.save(output)
-    
 def generate_flowchart_direct(size, code, output, font):
     """Wrapper function that can be called directly without Click"""
     font_data = {"path": font, "size": size}

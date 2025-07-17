@@ -3,6 +3,17 @@ from tkinter import filedialog, messagebox, scrolledtext, ttk
 from PIL import ImageTk, Image
 from Converter import generate_flowchart_direct
 import os
+import sys
+import tempfile
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 class ModernFlowchartApp:
     def __init__(self, root):
@@ -15,7 +26,7 @@ class ModernFlowchartApp:
         
         # Default settings
         self.font_size = 12
-        self.font_path = "./fonts/NotoSans-Regular.ttf"
+        self.font_path = resource_path("fonts/NotoSans-Regular.ttf")
         self.output_file = "flowchart.png"
         
         # Image viewing settings
@@ -333,7 +344,7 @@ ENDIF"""
         self.root.update()
         
         # Create a temporary file
-        temp_file = "temp_pseudocode.txt"
+        temp_file = os.path.join(tempfile.gettempdir(), "temp_pseudocode.txt")
         try:
             with open(temp_file, 'w', encoding='utf-8') as file:
                 file.write(pseudocode)
@@ -346,7 +357,7 @@ ENDIF"""
                 return
                 
             # Generate flowchart
-            output_file = "temp_flowchart.png"
+            output_file = os.path.join(tempfile.gettempdir(), "temp_flowchart.png")
             generate_flowchart_direct(self.font_size, temp_file, output_file, self.font_path)
             
             # Display the image
