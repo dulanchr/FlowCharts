@@ -1,7 +1,14 @@
-OUTPUT "are we insaaaaeeeeeane?"
-INPUT ans
-IF ans = "yes" THEN
-	OUTPUT "correct"
+INPUT age
+IF age >=18 THEN
+	IF age <35 THEN
+		OUTPUT "Associate"
+	ELSE 
+		IF age <=55 THEN
+			OUTPUT "Manassgemsent"
+		ELSE 
+			OUTPUT "too old"  
+		ENDIF
+	ENDIF
 ELSE
-	OUTPUT "incorrect"
+	OUTPUT "too young"
 ENDIF

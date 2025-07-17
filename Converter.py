@@ -633,6 +633,13 @@ def main(size,code,output,font):
     flowchart = drawer(chart_code,max_branch,max_y,layer_height,branch_width,font_data)
 
     flowchart.save(output)
-
+    
+def generate_flowchart_direct(size, code, output, font):
+    """Wrapper function that can be called directly without Click"""
+    font_data = {"path": font, "size": size}
+    lines = read(code)
+    chart_code, max_branch, max_y, layer_height, branch_width = translation(lines, font_data)
+    flowchart = drawer(chart_code, max_branch, max_y, layer_height, branch_width, font_data)
+    flowchart.save(output)
 if __name__ == '__main__':
     main() 
