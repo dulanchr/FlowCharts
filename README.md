@@ -1,34 +1,3 @@
-# Flowchart-Generator
-Automatically creates Flowcharts from Pseudocode!
-<img src="flowchart.png" width="629" height="500">
-
-## Video Demo
-
-https://www.youtube.com/watch?v=1gCqPBzU8Z0
-
-
-## Installing through Repl.it
-
-If you don't want to download this or setup python, you can run this project directly from your browser with [repl.it](https://repl.it/github/MugilanGN/Flowchart-Generator)
-
-This link will automatically clone the project and set it up for you. If you want to do it manually, you can import **github.com/MugilanGN/Flowchart-Generator** into repl.it yourself.
-
-From here onwards, you can edit the enter.txt file in the repl project and replace it with your own custom pseudocode.
-
-Once you are done, you can run the commands from the [CLI Usage](#cli-usage) section of the README in the repl.it terminal.
-
-## Local Installation
-
-This project was built on Python 3.7.4
-
-Run this to install the necessary dependencies:
-
-```sh 
-pip install Pillow==9.0.0 click
-```
-
-Next, clone this project onto your system.
-
 ## Writing the Pseudocode
 
 The Pseudocode is entered into a .txt file. It follows strict rules which must be obeyed
