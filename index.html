@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pseudocode to Flowchart Converter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pseudocode to Flowchart Converter</h1>
+            <p>Convert your pseudocode into beautiful flowcharts instantly</p>
+        </header>
+        
+        <main class="main-content">
+            <!-- Left Panel - Code Input -->
+            <div class="left-panel">
+                <div class="panel-header">
+                    <h2>Enter Pseudocode</h2>
+                    <div class="controls">
+                        <label for="fontSize">Font Size:</label>
+                        <input type="number" id="fontSize" value="20" min="12" max="50">
+                        <button id="generateBtn" class="generate-btn">Generate Flowchart</button>
+                    </div>
+                </div>
+                
+                <div class="code-input-container">
+                    <textarea id="codeInput" placeholder="Enter your pseudocode here...
+
+Example:
+OUTPUT &quot;are we insaaaaeeeeeane?&quot;
+INPUT ans
+IF ans = &quot;yes&quot; THEN
+    OUTPUT &quot;correct&quot;
+ELSE
+    OUTPUT &quot;incorrect&quot;
+ENDIF">OUTPUT "are we insaaaaeeeeeane?"
+INPUT ans
+IF ans = "yes" THEN
+    OUTPUT "correct"
+ELSE
+    OUTPUT "incorrect"
+ENDIF</textarea>
+                    
+                    <div class="syntax-help">
+                        <h3>Syntax Guide</h3>
+                        <div class="syntax-examples">
+                            <div class="syntax-item">
+                                <strong>Input/Output:</strong>
+                                <code>INPUT x<br>OUTPUT "hello"</code>
+                            </div>
+                            <div class="syntax-item">
+                                <strong>IF statements:</strong>
+                                <code>IF condition THEN<br>ELSE<br>ENDIF</code>
+                            </div>
+                            <div class="syntax-item">
+                                <strong>While loops:</strong>
+                                <code>WHILE condition DO<br>ENDWHILE</code>
+                            </div>
+                            <div class="syntax-item">
+                                <strong>For loops:</strong>
+                                <code>FOR i <- 1 TO 5<br>NEXT i</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Panel - Flowchart Output -->
+            <div class="right-panel">
+                <div class="panel-header">
+                    <h2>Generated Flowchart</h2>
+                    <div class="controls">
+                        <button id="downloadBtn" class="download-btn" disabled>Download PNG</button>
+                        <button id="clearBtn" class="clear-btn">Clear</button>
+                    </div>
+                </div>
+                
+                <div class="flowchart-container">
+                    <div id="loadingIndicator" class="loading hidden">
+                        <div class="spinner"></div>
+                        <p>Generating flowchart...</p>
+                    </div>
+                    
+                    <div id="flowchartOutput" class="flowchart-output">
+                        <div class="placeholder">
+                            <div class="placeholder-icon">📊</div>
+                            <h3>Your flowchart will appear here</h3>
+                            <p>Enter your pseudocode and click "Generate Flowchart" to see the result</p>
+                        </div>
+                    </div>
+                    
+                    <div id="errorMessage" class="error-message hidden">
+                        <div class="error-icon">⚠️</div>
+                        <h3>Error</h3>
+                        <p id="errorText">An error occurred while generating the flowchart.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2024 Pseudocode to Flowchart Converter. Created by Mugilan Ganesan</p>
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
