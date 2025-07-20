@@ -9,77 +9,79 @@
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div class="header">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <h1><i class="fas fa-project-diagram"></i> Pseudocode to Flowchart Converter</h1>
-                    <p>Transform your pseudocode into beautiful flowcharts instantly</p>
-                </div>
+    <div class="dashboard-container">
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-header">
+                <h1>Pseudocode to Flowchart Converter</h1>
+                <p>Transform your pseudocode into beautiful flowcharts instantly</p>
             </div>
-        </div>
-    </div>
 
-    <div class="main-container">
-        <div class="container-fluid">
-            <div class="row">
-                <!-- Left Panel - Input -->
-                <div class="col-lg-6 col-md-12 mb-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <i class="fas fa-code"></i> Pseudocode Input
-                        </div>
-                        <div class="card-body">
-                            <div class="controls mb-3">
-                                <button class="btn btn-outline-secondary" onclick="loadExample()">
-                                    <i class="fas fa-lightbulb"></i> Load Example
-                                </button>
-                                <button class="btn btn-outline-secondary" onclick="clearInput()">
-                                    <i class="fas fa-eraser"></i> Clear
-                                </button>
-                                <div class="font-size-control">
-                                    <label for="fontSize">Font Size:</label>
-                                    <input type="number" id="fontSize" class="form-control" value="20" min="8" max="40">
-                                </div>
+            <div class="main-container">
+                <div class="resizable-container">
+                    <!-- Left Panel - Input -->
+                    <div class="resizable-panel left-panel">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-code"></i> Pseudocode Input
                             </div>
-                            <textarea 
-                                id="pseudocodeInput" 
-                                class="form-control pseudocode-input" 
-                                placeholder="Enter your pseudocode here...
+                            <div class="card-body">
+                                <div class="controls">
+                                    <button class="btn btn-outline-secondary" onclick="loadExample()">
+                                        <i class="fas fa-lightbulb"></i> Load Example
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearInput()">
+                                        <i class="fas fa-eraser"></i> Clear
+                                    </button>
+                                    <div class="font-size-control">
+                                        <label for="fontSize">Font Size:</label>
+                                        <input type="number" id="fontSize" class="form-control" value="20" min="8" max="40">
+                                    </div>
+                                </div>
+                                <textarea 
+                                    id="pseudocodeInput" 
+                                    class="form-control pseudocode-input" 
+                                    placeholder="Enter your pseudocode here...
 
 Example:
+START
 INPUT age
 IF age >= 18 THEN
     OUTPUT 'Adult'
 ELSE
     OUTPUT 'Minor'
-ENDIF"
-                            ></textarea>
-                            <div class="mt-3">
-                                <button class="btn btn-primary btn-lg" onclick="generateFlowchart()">
-                                    <i class="fas fa-magic"></i> Generate Flowchart
-                                </button>
+ENDIF
+END"
+                                ></textarea>
+                                <div class="mt-3">
+                                    <button class="btn btn-primary btn-lg" onclick="generateFlowchart()">
+                                        <i class="fas fa-magic"></i> Generate Flowchart
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Right Panel - Output -->
-                <div class="col-lg-6 col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <i class="fas fa-image"></i> Generated Flowchart
-                        </div>
-                        <div class="card-body">
-                            <div class="flowchart-display" id="flowchartDisplay">
-                                <div class="placeholder-text">
-                                    <i class="fas fa-arrow-left"></i> Enter pseudocode and click "Generate Flowchart"
-                                </div>
+                    <!-- Resizer -->
+                    <div class="resizer" id="resizer"></div>
+
+                    <!-- Right Panel - Output -->
+                    <div class="resizable-panel right-panel">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-image"></i> Generated Flowchart
                             </div>
-                            <div class="mt-3" id="downloadSection" style="display: none;">
-                                <button class="btn btn-success" onclick="downloadFlowchart()">
-                                    <i class="fas fa-download"></i> Download PNG
-                                </button>
+                            <div class="card-body">
+                                <div class="flowchart-display" id="flowchartDisplay">
+                                    <div class="placeholder-text">
+                                        <i class="fas fa-arrow-left"></i> Enter pseudocode and click "Generate Flowchart"
+                                    </div>
+                                </div>
+                                <div class="mt-3" id="downloadSection">
+                                    <button class="btn btn-success" onclick="downloadFlowchart()" style="display: none;">
+                                        <i class="fas fa-download"></i> Download PNG
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -94,28 +96,16 @@ ENDIF"
         const maxZoom = 5;
         const minZoom = 0.1;
         
-        function showMessage(message, type = 'error') {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
-            messageDiv.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i> ${message}`;
-            
-            const container = document.querySelector('.main-container');
-            container.insertBefore(messageDiv, container.firstChild);
-            
-            setTimeout(() => {
-                messageDiv.remove();
-            }, 5000);
-        }
-        
         function loadExample() {
             fetch('/load_example')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('pseudocodeInput').value = data.pseudocode;
-                    showMessage('Example pseudocode loaded successfully!', 'success');
+                    // Add START and END keywords to the example
+                    const formattedExample = `START\n${data.pseudocode}\nEND`;
+                    document.getElementById('pseudocodeInput').value = formattedExample;
                 })
                 .catch(error => {
-                    showMessage('Error loading example: ' + error.message);
+                    console.error('Error loading example:', error);
                 });
         }
         
@@ -126,19 +116,26 @@ ENDIF"
                     <i class="fas fa-arrow-left"></i> Enter pseudocode and click "Generate Flowchart"
                 </div>
             `;
-            document.getElementById('downloadSection').style.display = 'none';
+            document.querySelector('#downloadSection button').style.display = 'none';
             currentZoom = 1;
         }
         
         function generateFlowchart() {
-            const pseudocode = document.getElementById('pseudocodeInput').value.trim();
+            const pseudocodeInput = document.getElementById('pseudocodeInput');
+            let pseudocode = pseudocodeInput.value.trim();
             const fontSize = parseInt(document.getElementById('fontSize').value);
             
-            console.log('Generating flowchart with pseudocode:', pseudocode);
+            // Remove START and END keywords if they exist (for processing)
+            const cleanPseudocode = pseudocode
+                .replace(/^START\s*\n?/i, '')  // Remove START from beginning
+                .replace(/\n?\s*END\s*$/i, '') // Remove END from end
+                .trim();
+            
+            console.log('Generating flowchart with pseudocode:', cleanPseudocode);
             console.log('Font size:', fontSize);
             
-            if (!pseudocode) {
-                showMessage('Please enter some pseudocode first.');
+            if (!cleanPseudocode) {
+                alert('Please enter some pseudocode first.');
                 return;
             }
             
@@ -154,7 +151,7 @@ ENDIF"
             `;
             
             // Hide download section
-            document.getElementById('downloadSection').style.display = 'none';
+            document.querySelector('#downloadSection button').style.display = 'none';
             
             console.log('Sending request to server...');
             
@@ -164,7 +161,7 @@ ENDIF"
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    pseudocode: pseudocode,
+                    pseudocode: cleanPseudocode,  // Send clean pseudocode without START/END
                     font_size: fontSize
                 })
             })
@@ -179,28 +176,31 @@ ENDIF"
                     console.log('Success! Creating image...');
                     
                     flowchartDisplay.innerHTML = `
+                        <div class="zoom-controls">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="zoomOut()">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="zoomIn()">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="fullscreen-btn">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleFullscreen()">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                        <div class="fit-screen-btn">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="fitToScreen()">
+                                <i class="fas fa-expand-arrows-alt"></i>
+                            </button>
+                        </div>
                         <div class="image-container">
                             <img src="${data.image}" alt="Generated Flowchart" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-                            <div class="zoom-controls">
-                                <button class="btn btn-sm btn-outline-secondary" onclick="zoomOut()">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" onclick="zoomIn()">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                            <div class="fullscreen-btn">
-                                <button class="btn btn-sm btn-outline-secondary" onclick="toggleFullscreen()">
-                                    <i class="fas fa-expand"></i>
-                                </button>
-                            </div>
                         </div>
                     `;
                     
-                    // Show download section
-                    document.getElementById('downloadSection').style.display = 'block';
-                    
-                    showMessage('Flowchart generated successfully!', 'success');
+                    // Show download button
+                    document.querySelector('#downloadSection button').style.display = 'inline-block';
                 } else {
                     console.error('Error from server:', data.error);
                     flowchartDisplay.innerHTML = `
@@ -208,7 +208,6 @@ ENDIF"
                             <i class="fas fa-exclamation-triangle"></i> Error: ${data.error || 'Unknown error'}
                         </div>
                     `;
-                    showMessage(data.error || 'Error generating flowchart');
                 }
             })
             .catch(error => {
@@ -218,16 +217,22 @@ ENDIF"
                         <i class="fas fa-exclamation-triangle"></i> Network error: ${error.message}
                     </div>
                 `;
-                showMessage('Network error: ' + error.message);
             });
         }
         
         function downloadFlowchart() {
-            const pseudocode = document.getElementById('pseudocodeInput').value.trim();
+            const pseudocodeInput = document.getElementById('pseudocodeInput');
+            let pseudocode = pseudocodeInput.value.trim();
             const fontSize = document.getElementById('fontSize').value;
             
-            if (!pseudocode) {
-                showMessage('Please generate a flowchart first.');
+            // Remove START and END keywords if they exist (for processing)
+            const cleanPseudocode = pseudocode
+                .replace(/^START\s*\n?/i, '')  // Remove START from beginning
+                .replace(/\n?\s*END\s*$/i, '') // Remove END from end
+                .trim();
+            
+            if (!cleanPseudocode) {
+                alert('Please generate a flowchart first.');
                 return;
             }
             
@@ -236,17 +241,17 @@ ENDIF"
             form.method = 'POST';
             form.action = '/download_flowchart';
             
-            const pseudocodeInput = document.createElement('input');
-            pseudocodeInput.type = 'hidden';
-            pseudocodeInput.name = 'pseudocode';
-            pseudocodeInput.value = pseudocode;
+            const pseudocodeInput_hidden = document.createElement('input');
+            pseudocodeInput_hidden.type = 'hidden';
+            pseudocodeInput_hidden.name = 'pseudocode';
+            pseudocodeInput_hidden.value = cleanPseudocode;  // Use clean pseudocode
             
             const fontSizeInput = document.createElement('input');
             fontSizeInput.type = 'hidden';
             fontSizeInput.name = 'font_size';
             fontSizeInput.value = fontSize;
             
-            form.appendChild(pseudocodeInput);
+            form.appendChild(pseudocodeInput_hidden);
             form.appendChild(fontSizeInput);
             
             document.body.appendChild(form);
@@ -257,7 +262,7 @@ ENDIF"
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    pseudocode: pseudocode,
+                    pseudocode: cleanPseudocode,  // Send clean pseudocode
                     font_size: parseInt(fontSize)
                 })
             })
@@ -277,10 +282,9 @@ ENDIF"
                 a.click();
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
-                showMessage('Flowchart downloaded successfully!', 'success');
             })
             .catch(error => {
-                showMessage('Error downloading flowchart: ' + error.message);
+                alert('Error downloading flowchart: ' + error.message);
             });
             
             document.body.removeChild(form);
@@ -308,22 +312,108 @@ ENDIF"
             }
         }
         
+        function fitToScreen() {
+            const img = document.querySelector('#flowchartDisplay img');
+            const container = document.getElementById('flowchartDisplay');
+            
+            if (img && container) {
+                const containerRect = container.getBoundingClientRect();
+                const imgRect = img.getBoundingClientRect();
+                
+                const scaleX = (containerRect.width - 100) / img.naturalWidth;
+                const scaleY = (containerRect.height - 100) / img.naturalHeight;
+                
+                currentZoom = Math.min(scaleX, scaleY, 1);
+                updateImageZoom();
+            }
+        }
+        
         function toggleFullscreen() {
             const flowchartDisplay = document.getElementById('flowchartDisplay');
             
             if (!document.fullscreenElement) {
                 flowchartDisplay.requestFullscreen().catch(err => {
-                    showMessage('Error entering fullscreen: ' + err.message);
+                    alert('Error entering fullscreen: ' + err.message);
                 });
             } else {
                 document.exitFullscreen();
             }
         }
         
+        // Mouse wheel zoom support
+        function initializeMouseWheelZoom() {
+            const flowchartDisplay = document.getElementById('flowchartDisplay');
+            
+            flowchartDisplay.addEventListener('wheel', function(e) {
+                if (e.ctrlKey) {
+                    e.preventDefault();
+                    
+                    const delta = e.deltaY;
+                    const zoomSpeed = 0.1;
+                    
+                    if (delta < 0) {
+                        // Zoom in
+                        if (currentZoom < maxZoom) {
+                            currentZoom += zoomSpeed;
+                            updateImageZoom();
+                        }
+                    } else {
+                        // Zoom out
+                        if (currentZoom > minZoom) {
+                            currentZoom -= zoomSpeed;
+                            updateImageZoom();
+                        }
+                    }
+                }
+            });
+        }
+        
         // Handle Enter key in pseudocode input
         document.getElementById('pseudocodeInput').addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.key === 'Enter') {
                 generateFlowchart();
+            }
+        });
+        
+        // Auto-add START and END keywords
+        document.getElementById('pseudocodeInput').addEventListener('input', function(e) {
+            const textarea = e.target;
+            let value = textarea.value;
+            
+            // Don't process if it's already properly formatted or empty
+            if (!value.trim() || (value.trim().toUpperCase().startsWith('START') && value.trim().toUpperCase().endsWith('END'))) {
+                return;
+            }
+            
+            // Remove existing START/END to avoid duplicates
+            const cleanValue = value
+                .replace(/^START\s*\n?/i, '')
+                .replace(/\n?\s*END\s*$/i, '')
+                .trim();
+            
+            if (cleanValue) {
+                const cursorPos = textarea.selectionStart;
+                const formattedValue = `START\n${cleanValue}\nEND`;
+                
+                // Only update if different to avoid infinite loop
+                if (value !== formattedValue) {
+                    textarea.value = formattedValue;
+                    
+                    // Restore cursor position (approximately)
+                    const newPos = Math.min(cursorPos + 6, formattedValue.length - 4); // Account for "START\n"
+                    textarea.setSelectionRange(newPos, newPos);
+                }
+            }
+        });
+        
+        // Handle focus and blur events for better UX
+        document.getElementById('pseudocodeInput').addEventListener('focus', function(e) {
+            const textarea = e.target;
+            const value = textarea.value.trim();
+            
+            if (!value) {
+                textarea.value = 'START\n\nEND';
+                textarea.setSelectionRange(6, 6); // Position cursor between START and END
             }
         });
         
@@ -337,7 +427,52 @@ ENDIF"
         // Load example on page load
         window.onload = function() {
             loadExample();
+            initializeResizer();
+            initializeMouseWheelZoom();
         };
+        
+        // Initialize resizer functionality
+        function initializeResizer() {
+            const resizer = document.getElementById('resizer');
+            const leftPanel = document.querySelector('.left-panel');
+            const rightPanel = document.querySelector('.right-panel');
+            const container = document.querySelector('.resizable-container');
+            
+            let isResizing = false;
+            
+            resizer.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+            
+            function handleMouseMove(e) {
+                if (!isResizing) return;
+                
+                const containerRect = container.getBoundingClientRect();
+                const containerWidth = containerRect.width;
+                const mouseX = e.clientX - containerRect.left;
+                
+                const leftWidth = (mouseX / containerWidth) * 100;
+                const rightWidth = 100 - leftWidth;
+                
+                // Ensure minimum widths
+                if (leftWidth >= 20 && leftWidth <= 70) {
+                    leftPanel.style.width = leftWidth + '%';
+                    rightPanel.style.width = rightWidth + '%';
+                }
+            }
+            
+            function handleMouseUp() {
+                isResizing = false;
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+            }
+        }
     </script>
 </body>
 </html>
